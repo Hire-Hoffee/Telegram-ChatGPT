@@ -1,6 +1,5 @@
 function messagesHandler(chatBot, chatID, database, msg) {
   const userMessages = [];
-  console.log(database.DB);
 
   database.DB.push(msg);
   database.DB.forEach((item) => {
@@ -9,7 +8,7 @@ function messagesHandler(chatBot, chatID, database, msg) {
     }
   });
 
-  if (userMessages.length === 5) {
+  if (userMessages.length === 50) {
     database.filterDB(msg.from.id);
     userMessages.length = 0;
     chatBot.sendMessage(chatID, "Context memory reset " + String.fromCodePoint(0x1f92f));
