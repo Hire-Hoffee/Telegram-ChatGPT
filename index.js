@@ -1,9 +1,7 @@
 import { botConnection } from "./botConfig.js";
 import { ChatQueryRequest } from "./axiosConfig.js";
-import * as dotenv from "dotenv";
-dotenv.config();
 
-const chatBot = botConnection(process.env.BOT_TOKEN);
+const chatBot = botConnection();
 
 chatBot.on("message", async (msg) => {
   try {
