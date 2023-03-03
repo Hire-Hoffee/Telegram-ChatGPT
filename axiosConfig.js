@@ -13,7 +13,7 @@ const instance = axios.create({
 async function ChatQueryRequest(content) {
   const result = await instance.post("", {
     model: "gpt-3.5-turbo",
-    messages: [{ role: "user", content }],
+    messages: content,
   });
 
   return result.data.choices[0].message.content.trim();
