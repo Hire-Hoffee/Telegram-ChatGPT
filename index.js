@@ -6,7 +6,18 @@ import fillerText from "./textMessages.js";
 
 const chatBot = botConnection();
 
-chatBot.on("message", async (msg) => {
+chatBot.on("message", (msg) => {
+  const chatID = msg.chat.id;
+  if (!msg.text) {
+    chatBot.sendMessage(
+      chatID,
+      "Sorry, but I can understand only text messages " + String.fromCodePoint(0x1f625)
+    );
+  }
+  return;
+});
+
+chatBot.on("text", async (msg) => {
   const chatID = msg.chat.id;
 
   if (msg.text === "/start") {
@@ -17,7 +28,6 @@ chatBot.on("message", async (msg) => {
 
   try {
     chatBot.sendChatAction(chatID, "typing");
-
     const userMessages = messagesHandler(chatBot, chatID, database, msg);
 
     if (userMessages.length > 0) {
