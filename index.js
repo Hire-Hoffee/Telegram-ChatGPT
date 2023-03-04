@@ -28,11 +28,15 @@ chatBot.on("text", async (msg) => {
 
   try {
     chatBot.sendChatAction(chatID, "typing");
-    const userMessages = messagesHandler(chatBot, chatID, database, msg);
+    const listOfMessages = messagesHandler(chatBot, chatID, database, msg);
 
-    if (userMessages.length > 0) {
-      const result = await ChatQueryRequest(userMessages);
-      chatBot.sendMessage(chatID, result);
+    if (listOfMessages.length > 0) {
+      setTimeout(async () => {
+        chatBot.sendChatAction(chatID, "typing");
+        const result = await ChatQueryRequest(listOfMessages);
+        chatBot.sendMessage(chatID, result);
+        messagesHandler(chatBot, chatID, database, msg, result);
+      }, 3000);
       return;
     } else {
       chatBot.sendMessage(chatID, "Rewrite your request please" + String.fromCodePoint(0x270d));
@@ -41,7 +45,7 @@ chatBot.on("text", async (msg) => {
   } catch (error) {
     const chatID = msg.chat.id;
     chatBot.sendMessage(chatID, "Unexpected error ocurred " + String.fromCodePoint(0x1f62d));
-    console.log(error);
+    console.log(error.response.statusText);
     return;
   }
 });

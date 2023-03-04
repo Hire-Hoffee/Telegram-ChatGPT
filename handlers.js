@@ -1,20 +1,34 @@
-function messagesHandler(chatBot, chatID, database, msg) {
-  const userMessages = [];
+function messagesHandler(chatBot, chatID, database, msg, msgAI) {
+  const listOfMessages = [];
+
+  if (msgAI) {
+    const msgObj = {
+      from: {
+        id: msg.from.id,
+        first_name: "ai_response",
+      },
+      text: msgAI,
+    };
+    database.DB.push(msgObj);
+    return;
+  }
 
   database.DB.push(msg);
   database.DB.forEach((item) => {
     if (item.from.id === msg.from.id) {
-      userMessages.push({ role: "user", content: item.text });
+      item.from.first_name === "ai_response"
+        ? listOfMessages.push({ role: "assistant", content: item.text })
+        : listOfMessages.push({ role: "user", content: item.text });
     }
   });
 
-  if (userMessages.length === 50) {
+  if (listOfMessages.length === 50) {
     database.filterDB(msg.from.id);
-    userMessages.length = 0;
+    listOfMessages.length = 0;
     chatBot.sendMessage(chatID, "Context memory reset " + String.fromCodePoint(0x1f92f));
   }
 
-  return userMessages;
+  return listOfMessages;
 }
 
 export { messagesHandler };

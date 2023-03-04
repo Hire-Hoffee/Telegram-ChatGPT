@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "pm_start": "pm2 start index.js",
+    "pm_start": "pm2 start index.js --watch",
     "pm_stop": "pm2 stop index.js",
     "pm_list": "pm2 list",
     "pm_monit": "pm2 monit"
