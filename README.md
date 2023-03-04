@@ -1,5 +1,7 @@
 # Telegram Chat Bot with ChatGPT features
 
+### [Link to bot](https://t.me/chatting_gpt3_bot)
+
 #### Usage
 
 - `git clone`
