@@ -25,6 +25,11 @@ chatBot.on("text", async (msg) => {
     chatBot.sendMessage(chatID, text);
     return;
   }
+  if (msg.text === "/resetContext") {
+    database.filterDB(msg.from.id);
+    chatBot.sendMessage(chatID, "Context has been reset " + String.fromCodePoint(0x2705));
+    return;
+  }
 
   try {
     chatBot.sendChatAction(chatID, "typing");
@@ -39,7 +44,7 @@ chatBot.on("text", async (msg) => {
       }, 3000);
       return;
     } else {
-      chatBot.sendMessage(chatID, "Rewrite your request please" + String.fromCodePoint(0x270d));
+      chatBot.sendMessage(chatID, "Rewrite your request please " + String.fromCodePoint(0x270d));
       return;
     }
   } catch (error) {
