@@ -1,10 +1,14 @@
 import { botConnection } from "./botConfig.js";
-import { ChatQueryRequest } from "./axiosConfig.js";
+import { ChatRequestText } from "./axiosConfig.js";
 import { messagesHandler } from "./handlers.js";
 import { database } from "./messagesDB.js";
 import fillerText from "./textMessages.js";
 
 const chatBot = botConnection();
+
+chatBot.setMyCommands([
+  { command: "resetcontext", description: "Reset ChatGPT conversation context" },
+]);
 
 chatBot.on("message", (msg) => {
   const chatID = msg.chat.id;
@@ -25,7 +29,7 @@ chatBot.on("text", async (msg) => {
     chatBot.sendMessage(chatID, text);
     return;
   }
-  if (msg.text === "/resetContext") {
+  if (msg.text === "/resetcontext") {
     database.filterDB(msg.from.id);
     chatBot.sendMessage(chatID, "Context has been reset " + String.fromCodePoint(0x2705));
     return;
@@ -38,7 +42,7 @@ chatBot.on("text", async (msg) => {
     if (listOfMessages.length > 0) {
       setTimeout(async () => {
         chatBot.sendChatAction(chatID, "typing");
-        const result = await ChatQueryRequest(listOfMessages);
+        const result = await ChatRequestText(listOfMessages);
         chatBot.sendMessage(chatID, result);
         messagesHandler(chatBot, chatID, database, msg, result);
       }, 3000);
