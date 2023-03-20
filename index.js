@@ -3,6 +3,7 @@ import { ChatRequestText } from "./axiosConfig.js";
 import { messagesHandler } from "./handlers.js";
 import { database } from "./messagesDB.js";
 import fillerText from "./textMessages.js";
+import { usersTracking } from "./utils.js";
 
 const chatBot = botConnection();
 
@@ -23,6 +24,7 @@ chatBot.on("message", (msg) => {
 
 chatBot.on("text", async (msg) => {
   const chatID = msg.chat.id;
+  await usersTracking("./usersData.json", msg);
 
   if (msg.text === "/start") {
     const text = fillerText.greetings;
