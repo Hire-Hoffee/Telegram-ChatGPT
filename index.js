@@ -6,6 +6,7 @@ import fillerText from "./textMessages.js";
 import { usersTracking } from "./utils.js";
 
 const chatBot = botConnection();
+let messagesNum = 0;
 
 chatBot.setMyCommands([
   { command: "resetcontext", description: "Reset ChatGPT conversation context" },
@@ -23,6 +24,8 @@ chatBot.on("message", (msg) => {
 });
 
 chatBot.on("text", async (msg) => {
+  messagesNum += 1;
+
   const chatID = msg.chat.id;
   await usersTracking("./usersData.json", msg);
 
@@ -32,8 +35,13 @@ chatBot.on("text", async (msg) => {
     return;
   }
   if (msg.text === "/resetcontext") {
-    database.filterDB(msg.from.id);
-    chatBot.sendMessage(chatID, "Context has been reset " + String.fromCodePoint(0x2705));
+    if (messagesNum < 20) {
+      database.filterDB(msg.from.id);
+      setTimeout(() => {
+        chatBot.sendMessage(chatID, "Context has been reset " + String.fromCodePoint(0x2705));
+        messagesNum = 0;
+      }, 1000);
+    }
     return;
   }
 
@@ -42,12 +50,15 @@ chatBot.on("text", async (msg) => {
     const listOfMessages = messagesHandler(chatBot, chatID, database, msg);
 
     if (listOfMessages.length > 0) {
-      setTimeout(async () => {
-        chatBot.sendChatAction(chatID, "typing");
-        const result = await ChatRequestText(listOfMessages);
-        chatBot.sendMessage(chatID, result);
-        messagesHandler(chatBot, chatID, database, msg, result);
-      }, 3000);
+      if (messagesNum < 20) {
+        setTimeout(async () => {
+          chatBot.sendChatAction(chatID, "typing");
+          const result = await ChatRequestText(listOfMessages);
+          chatBot.sendMessage(chatID, result);
+          messagesHandler(chatBot, chatID, database, msg, result);
+          messagesNum = 0;
+        }, 1000);
+      }
       return;
     } else {
       chatBot.sendMessage(chatID, "Rewrite your request please " + String.fromCodePoint(0x270d));
