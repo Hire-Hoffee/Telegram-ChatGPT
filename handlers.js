@@ -22,7 +22,7 @@ function messagesHandler(chatBot, chatID, database, msg, msgAI) {
     }
   });
 
-  if (listOfMessages.length === 10) {
+  if (listOfMessages.length >= 10) {
     database.filterDB(msg.from.id);
     listOfMessages.length = 0;
     chatBot.sendMessage(chatID, "Context memory reset " + String.fromCodePoint(0x1f92f));
