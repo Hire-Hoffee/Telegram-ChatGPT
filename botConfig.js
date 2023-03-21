@@ -4,7 +4,7 @@ dotenv.config();
 
 function botConnection() {
   try {
-    const bot = new TelegramBot(process.env.BOT_TEST_TOKEN, { polling: true });
+    const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
     console.log("Bot connected");
     return bot;
   } catch (error) {
