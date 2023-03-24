@@ -1,4 +1,7 @@
 import fs from "fs/promises";
+import { GoogleSpreadsheet } from "google-spreadsheet";
+import * as dotenv from "dotenv";
+dotenv.config();
 
 async function usersTracking(filePath, msg) {
   try {
@@ -34,4 +37,26 @@ async function usersTracking(filePath, msg) {
   return;
 }
 
-export { usersTracking };
+async function toGoogleSheet(sheetTitle, filePath) {
+  try {
+    const doc = new GoogleSpreadsheet("1GbcrY-krJa6qy3ZzVwoX16xRHcES3RymaF2fcvyyGhs");
+    const credentials = await fs.readFile("./googleCredentials.json");
+
+    await doc.useServiceAccountAuth(JSON.parse(credentials));
+    await doc.loadInfo();
+
+    const usersData = JSON.parse(await fs.readFile(filePath));
+
+    if (doc.sheetsByTitle[sheetTitle]) {
+      doc.sheetsByTitle[sheetTitle].delete();
+    }
+
+    await doc.addSheet({ headerValues: Object.keys(usersData[0]), title: sheetTitle });
+    const sheet = doc.sheetsByTitle[sheetTitle];
+    sheet.addRows(usersData);
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+export { usersTracking, toGoogleSheet };
