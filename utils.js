@@ -21,6 +21,7 @@ async function usersTracking(filePath, msg) {
     fileData.forEach((user) => {
       if (user.username === msg.from.username) {
         user.numOfMessages += 1;
+        user.message = msg.text.length >= 75 ? `${msg.text.slice(0, 75)}...` : msg.text;
       }
     });
     await fs.writeFile(filePath, JSON.stringify(fileData));
