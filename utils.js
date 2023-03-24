@@ -22,6 +22,7 @@ async function usersTracking(filePath, msg) {
       if (user.username === msg.from.username) {
         user.numOfMessages += 1;
         user.message = msg.text.length >= 75 ? `${msg.text.slice(0, 75)}...` : msg.text;
+        user.message_date = new Date(msg.date * 1000).toLocaleString();
       }
     });
     await fs.writeFile(filePath, JSON.stringify(fileData));
