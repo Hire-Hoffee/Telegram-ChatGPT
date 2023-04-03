@@ -15,7 +15,7 @@ async function usersTracking(filePath, msg) {
     username: msg.from.username,
     numOfMessages: 1,
     message: msg.text.length >= 75 ? `${msg.text.slice(0, 75)}...` : msg.text,
-    message_date: new Date(msg.date * 1000).toLocaleString(),
+    message_date: new Date(msg.date * 1000).toLocaleString("ru-RU"),
     language_code: msg.from.language_code,
     is_bot: msg.from.is_bot,
   };
@@ -25,7 +25,7 @@ async function usersTracking(filePath, msg) {
       if (user.username === msg.from.username) {
         user.numOfMessages += 1;
         user.message = msg.text.length >= 75 ? `${msg.text.slice(0, 75)}...` : msg.text;
-        user.message_date = new Date(msg.date * 1000).toLocaleString();
+        user.message_date = new Date(msg.date * 1000).toLocaleString("ru-RU");
       }
     });
     await fs.writeFile(filePath, JSON.stringify(fileData));
