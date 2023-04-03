@@ -39,7 +39,7 @@ async function usersTracking(filePath, msg) {
 
 async function toGoogleSheet(sheetTitle, filePath) {
   try {
-    const doc = new GoogleSpreadsheet("1GbcrY-krJa6qy3ZzVwoX16xRHcES3RymaF2fcvyyGhs");
+    const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET);
     const credentials = await fs.readFile("./googleCredentials.json");
 
     await doc.useServiceAccountAuth(JSON.parse(credentials));
