@@ -10,6 +10,8 @@ async function usersTracking(filePath, msg) {
     await fs.writeFile(filePath, "[]");
   }
 
+  msg.from.username = msg.from.username ? msg.from.username : "unknown";
+
   const fileData = JSON.parse(await fs.readFile(filePath));
   const userData = {
     username: msg.from.username,
