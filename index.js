@@ -28,7 +28,7 @@ chatBot.on("text", async (msg) => {
 
   const chatID = msg.chat.id;
   await usersTracking("./usersData.json", msg);
-  await toGoogleSheet("Users", "./usersData.json");
+  await toGoogleSheet("Users", "./usersData.json", msg.from.username);
 
   if (msg.text === "/start") {
     const text = fillerText.greetings;

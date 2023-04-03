@@ -37,23 +37,35 @@ async function usersTracking(filePath, msg) {
   return;
 }
 
-async function toGoogleSheet(sheetTitle, filePath) {
+async function toGoogleSheet(sheetTitle, filePath, loginName) {
   try {
-    const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET);
+    const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_DEV);
     const credentials = await fs.readFile("./googleCredentials.json");
 
     await doc.useServiceAccountAuth(JSON.parse(credentials));
     await doc.loadInfo();
 
-    const usersData = JSON.parse(await fs.readFile(filePath));
+    const fileData = JSON.parse(await fs.readFile(filePath));
+    const sheet = doc.sheetsByTitle[sheetTitle];
+    const rows = await sheet.getRows();
 
-    if (doc.sheetsByTitle[sheetTitle]) {
-      doc.sheetsByTitle[sheetTitle].delete();
+    rows.forEach((row) => {
+      if (row._rawData[0] === loginName) {
+        const { username, numOfMessages, message, message_date, language_code, is_bot } =
+          fileData.find((user) => user.username === loginName);
+
+        row._rawData = [username, numOfMessages, message, message_date, language_code, is_bot];
+        row.save();
+        return;
+      }
+    });
+
+    if (!rows.some((row) => row._rawData[0] === loginName)) {
+      const user = fileData.find((user) => user.username === loginName);
+      sheet.addRow(user);
     }
 
-    await doc.addSheet({ headerValues: Object.keys(usersData[0]), title: sheetTitle });
-    const sheet = doc.sheetsByTitle[sheetTitle];
-    sheet.addRows(usersData);
+    return;
   } catch (error) {
     console.log(error.message);
   }
