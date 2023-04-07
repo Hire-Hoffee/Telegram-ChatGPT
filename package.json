@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "pm_start": "pm2 start index.js -o ./logs/index-out.log -e ./logs/index-error.log",
+    "pm_start": "pm2 start index.js -o ./logs/index-out.log -e ./logs/index-error.log --log-date-format 'DD.MM.YYYY hh:mm:ss'",
     "pm_stop": "pm2 stop index.js",
     "pm_list": "pm2 list",
     "pm_monit": "pm2 monit"
