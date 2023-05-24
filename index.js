@@ -3,7 +3,7 @@ import { ChatRequestText } from "./axiosConfig.js";
 import { messagesHandler } from "./handlers.js";
 import { database } from "./messagesDB.js";
 import fillerText from "./textMessages.js";
-import { usersTracking, toGoogleSheet } from "./utils.js";
+import { toGoogleSheet } from "./utils.js";
 
 const chatBot = botConnection();
 let messagesNum = 0;
@@ -28,8 +28,8 @@ chatBot.on("text", async (msg) => {
     messagesNum += 1;
 
     const chatID = msg.chat.id;
-    await usersTracking("./usersData.json", msg);
-    await toGoogleSheet("Users", "./usersData.json", msg.from.username);
+
+    await toGoogleSheet("Users", msg);
 
     if (msg.text === "/start") {
       const text = fillerText.greetings;
