@@ -10,7 +10,7 @@ const instance = axios.create({
   },
 });
 
-async function ChatRequestText(content) {
+async function chatRequestText(content) {
   try {
     const result = await instance.post("/v1/chat/completions", {
       model: "gpt-3.5-turbo",
@@ -23,4 +23,18 @@ async function ChatRequestText(content) {
   }
 }
 
-export { ChatRequestText };
+async function chatRequestImage(content) {
+  try {
+    const result = await instance.post("/v1/images/generations", {
+      prompt: content,
+      n: 1,
+      size: "512x512",
+    });
+    return result.data.data[0].url;
+  } catch (error) {
+    console.log(error.message);
+    throw error;
+  }
+}
+
+export { chatRequestText, chatRequestImage };
