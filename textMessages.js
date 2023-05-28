@@ -5,8 +5,10 @@ const fillerText = {
   \nAlso you can generate images using this bot, type '/imagegeneration' command to see more details.
   \nHave fun !
   `,
+
   error: `An unexpected error occurred, please try again later... ${String.fromCodePoint(0x1f62d)}
   \nP.S. You can write to the creator of the bot @HireHoffee, this can help solve the problem faster.`,
+
   imageGen: `To generate image just type "/image [your description of an image]" (square brackets are not required)
   \nP.S. Generating the image may take some time, so be patient and better not write any queries until the image is generated`,
 };

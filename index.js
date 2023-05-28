@@ -81,9 +81,7 @@ chatBot.on("text", async (msg) => {
             messagesHandler(chatBot, chatID, database, msg, result);
             messagesNum = 0;
           } catch (error) {
-            const chatID = msg.chat.id;
-            const text = fillerText.error;
-            chatBot.sendMessage(chatID, text);
+            chatBot.sendMessage(msg.chat.id, fillerText.error);
             console.log(error);
             return;
           }
@@ -95,9 +93,7 @@ chatBot.on("text", async (msg) => {
       return;
     }
   } catch (error) {
-    const chatID = msg.chat.id;
-    const text = fillerText.error;
-    chatBot.sendMessage(chatID, text);
+    chatBot.sendMessage(msg.chat.id, fillerText.error);
     console.log(error);
     return;
   }
