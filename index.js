@@ -46,6 +46,11 @@ chatBot.on("text", async (msg) => {
     if (msg.text.split(" ")[0] === "/image") {
       chatBot.sendChatAction(chatID, "typing");
 
+      if (!msg.text.split("/image ")[1]) {
+        chatBot.sendMessage(chatID, 'Please write request as "/image [your image description]"');
+        return;
+      }
+
       const result = await backOff(() => chatRequestImage(msg.text.split("/image ")[1]), {
         delayFirstAttempt: true,
         numOfAttempts: 3,
