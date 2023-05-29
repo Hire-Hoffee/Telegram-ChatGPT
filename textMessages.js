@@ -6,10 +6,28 @@ const fillerText = {
   \nHave fun !
   `,
 
-  error: `An unexpected error occurred, please try again later... ${String.fromCodePoint(0x1f62d)}
-  \nP.S. You can write to the creator of the bot @HireHoffee, this can help solve the problem faster.`,
+  errors: {
+    unexpected: `An unexpected error occurred, please try again later... ${String.fromCodePoint(
+      0x1f62d
+    )}
+    \nP.S. You can write to the creator of the bot @HireHoffee, this can help solve the problem faster.`,
 
-  imageGen: `To generate image just type "/image [your description of an image]" (square brackets are not required and it will be better to write request in English)
+    tooManyRequests: `${String.fromCodePoint(
+      0x231b
+    )} Too many requests are currently being sent to the bot: trying to resend your request...`,
+
+    retryRequestFailed: `${String.fromCodePoint(
+      0x274c
+    )} Retry request failed, please try again later`,
+
+    tooLongMsg: `Your message is too long... ${String.fromCodePoint(0x1f625)}`,
+
+    onlyTextAllowed: `Sorry, but I can understand only text messages ${String.fromCodePoint(
+      0x1f625
+    )}`,
+  },
+
+  imageGen: `To generate image just type "/image [your description of an image]" (square brackets are not required) and it will be better to write request in English
   \nP.S. Generating the image may take some time, so be patient and better not write any queries until the image is generated`,
 };
 

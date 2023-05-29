@@ -4,9 +4,9 @@ import { messagesHandler } from "./handlers.js";
 import { database } from "./messagesDB.js";
 import fillerText from "./textMessages.js";
 import { toGoogleSheet } from "./utils.js";
+import { backOff } from "exponential-backoff";
 
 const chatBot = botConnection();
-let messagesNum = 0;
 
 chatBot.setMyCommands([
   { command: "resetcontext", description: "Reset ChatGPT conversation context" },
@@ -14,87 +14,95 @@ chatBot.setMyCommands([
 ]);
 
 chatBot.on("message", (msg) => {
-  const chatID = msg.chat.id;
   if (!msg.text) {
-    chatBot.sendMessage(
-      chatID,
-      "Sorry, but I can understand only text messages " + String.fromCodePoint(0x1f625)
-    );
+    chatBot.sendMessage(msg.chat.id, fillerText.errors.onlyTextAllowed);
     return;
   }
   if (msg.text.length >= 4090) {
-    chatBot.sendMessage(chatID, "Your message is too long..." + String.fromCodePoint(0x1f625));
+    chatBot.sendMessage(msg.chat.id, fillerText.errors.tooLongMsg);
     return;
   }
 });
 
 chatBot.on("text", async (msg) => {
   try {
-    messagesNum += 1;
     const chatID = msg.chat.id;
-    await toGoogleSheet("Users", msg);
+    await backOff(() => toGoogleSheet("Users", msg), { delayFirstAttempt: true });
 
     if (msg.text === "/start") {
-      const text = fillerText.greetings;
-      chatBot.sendMessage(chatID, text);
-      return;
-    }
-    if (msg.text === "/resetcontext") {
-      if (messagesNum < 20) {
-        database.filterDB(msg.from.id);
-        setTimeout(() => {
-          chatBot.sendMessage(chatID, "Context has been reset " + String.fromCodePoint(0x2705));
-          messagesNum = 0;
-        }, 1000);
-      }
+      chatBot.sendMessage(chatID, fillerText.greetings);
       return;
     }
     if (msg.text === "/imagegeneration") {
-      const text = fillerText.imageGen;
-      chatBot.sendMessage(chatID, text);
+      chatBot.sendMessage(chatID, fillerText.imageGen);
+      return;
+    }
+    if (msg.text === "/resetcontext") {
+      database.filterDB(msg.from.id);
+      chatBot.sendMessage(chatID, "Context has been reset " + String.fromCodePoint(0x2705));
       return;
     }
 
     if (msg.text.split(" ")[0] === "/image") {
-      try {
-        chatBot.sendChatAction(chatID, "typing");
-        const imageDescription = msg.text.split("/image ")[1];
-        const result = await chatRequestImage(imageDescription);
-        chatBot.sendPhoto(chatID, result);
-        return;
-      } catch (error) {
-        chatBot.sendMessage(chatID, error.response.data.error.message);
-        return;
-      }
+      chatBot.sendChatAction(chatID, "typing");
+
+      const result = await backOff(() => chatRequestImage(msg.text.split("/image ")[1]), {
+        delayFirstAttempt: true,
+        numOfAttempts: 3,
+        startingDelay: 300,
+        retry: function (e, attemptNumber) {
+          chatBot.sendChatAction(chatID, "typing");
+          if (attemptNumber === this.numOfAttempts) {
+            chatBot.sendMessage(chatID, fillerText.errors.retryRequestFailed);
+            return false;
+          }
+        },
+      });
+
+      chatBot.sendPhoto(chatID, result);
+      return;
     }
 
-    chatBot.sendChatAction(chatID, "typing");
     const listOfMessages = messagesHandler(chatBot, chatID, database, msg);
 
     if (listOfMessages.length > 0) {
-      if (messagesNum < 20) {
-        setTimeout(async () => {
-          try {
-            chatBot.sendChatAction(chatID, "typing");
-            const result = await chatRequestText(listOfMessages);
-            chatBot.sendMessage(chatID, result);
-            messagesHandler(chatBot, chatID, database, msg, result);
-            messagesNum = 0;
-          } catch (error) {
-            chatBot.sendMessage(msg.chat.id, fillerText.error);
-            console.log(error);
-            return;
+      chatBot.sendChatAction(chatID, "typing");
+
+      const result = await backOff(() => chatRequestText(listOfMessages), {
+        delayFirstAttempt: true,
+        numOfAttempts: 5,
+        startingDelay: 200,
+        retry: function (e, attemptNumber) {
+          if (attemptNumber === this.numOfAttempts) {
+            chatBot.sendMessage(chatID, fillerText.errors.retryRequestFailed);
+            return false;
           }
-        }, 1000);
-      }
+        },
+      });
+
+      chatBot.sendMessage(chatID, result);
+      messagesHandler(chatBot, chatID, database, msg, result);
       return;
     } else {
       chatBot.sendMessage(chatID, "Rewrite your request please " + String.fromCodePoint(0x270d));
       return;
     }
   } catch (error) {
-    chatBot.sendMessage(msg.chat.id, fillerText.error);
     console.log(error);
+
+    if (error?.response?.status === 429) {
+      chatBot.sendMessage(msg.chat.id, fillerText.errors.tooManyRequests);
+      return;
+    }
+    if (error?.response?.status === 400 && error?.response?.data?.error?.message) {
+      chatBot.sendMessage(
+        msg.chat.id,
+        `${String.fromCodePoint(0x274c)} ${error.response.data.error.message}`
+      );
+      return;
+    }
+
+    chatBot.sendMessage(msg.chat.id, fillerText.errors.unexpected);
     return;
   }
 });
