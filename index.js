@@ -34,7 +34,7 @@ chatBot.on("text", async (msg) => {
       return;
     }
     if (msg.text === "/imagegeneration") {
-      chatBot.sendMessage(chatID, fillerText.imageGen);
+      chatBot.sendMessage(chatID, fillerText.imageGen, { parse_mode: "html" });
       return;
     }
     if (msg.text === "/resetcontext") {
@@ -43,15 +43,15 @@ chatBot.on("text", async (msg) => {
       return;
     }
 
-    if (msg.text.split(" ")[0] === "/image") {
+    if (msg.text.split(" ")[0] === "!image") {
       chatBot.sendChatAction(chatID, "typing");
 
-      if (!msg.text.split("/image ")[1]) {
-        chatBot.sendMessage(chatID, 'Please write request as "/image [your image description]"');
+      if (!msg.text.split("!image ")[1]) {
+        chatBot.sendMessage(chatID, 'Please write request as "!image [your image description]"');
         return;
       }
 
-      const result = await backOff(() => chatRequestImage(msg.text.split("/image ")[1]), {
+      const result = await backOff(() => chatRequestImage(msg.text.split("!image ")[1]), {
         delayFirstAttempt: true,
         numOfAttempts: 3,
         startingDelay: 300,
