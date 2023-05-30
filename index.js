@@ -93,13 +93,13 @@ chatBot.on("text", async (msg) => {
       return;
     }
   } catch (error) {
-    console.log(error);
-
     if (error?.response?.status === 429) {
+      console.log(error.response.data);
       chatBot.sendMessage(msg.chat.id, fillerText.errors.tooManyRequests);
       return;
     }
     if (error?.response?.status === 400 && error?.response?.data?.error?.message) {
+      console.log(error.response.data);
       chatBot.sendMessage(
         msg.chat.id,
         `${String.fromCodePoint(0x274c)} ${error.response.data.error.message}`
@@ -107,6 +107,7 @@ chatBot.on("text", async (msg) => {
       return;
     }
 
+    console.log(error);
     chatBot.sendMessage(msg.chat.id, fillerText.errors.unexpected);
     return;
   }
