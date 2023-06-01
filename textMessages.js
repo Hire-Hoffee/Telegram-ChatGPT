@@ -22,6 +22,10 @@ const fillerText = {
 
     tooLongMsg: `Your message is too long... ${String.fromCodePoint(0x1f625)}`,
 
+    billingLimitReached: `${String.fromCodePoint(
+      0x231b
+    )} Billing limit for AI bot has been reached. Please wait for recovery...}`,
+
     onlyTextAllowed: `Sorry, but I can understand only text messages ${String.fromCodePoint(
       0x1f625
     )}`,

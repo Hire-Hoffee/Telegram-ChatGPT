@@ -98,6 +98,11 @@ chatBot.on("text", async (msg) => {
       chatBot.sendMessage(msg.chat.id, fillerText.errors.tooManyRequests);
       return;
     }
+    if (error?.response?.data.error.type === "insufficient_quota") {
+      console.log(error.response.data);
+      chatBot.sendMessage(msg.chat.id, fillerText.errors.billingLimitReached);
+      return;
+    }
     if (error?.response?.status === 400 && error?.response?.data?.error?.message) {
       console.log(error.response.data);
       chatBot.sendMessage(
