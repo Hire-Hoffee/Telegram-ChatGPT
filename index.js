@@ -52,15 +52,16 @@ chatBot.on("text", async (msg) => {
       }
 
       const result = await backOff(() => chatRequestImage(msg.text.split("!image ")[1]), {
-        delayFirstAttempt: true,
         numOfAttempts: 3,
-        startingDelay: 300,
+        startingDelay: 15000,
         retry: function (e, attemptNumber) {
-          chatBot.sendChatAction(chatID, "typing");
           if (attemptNumber === this.numOfAttempts) {
             chatBot.sendMessage(chatID, fillerText.errors.retryRequestFailed);
             return false;
           }
+          chatBot.sendChatAction(chatID, "typing");
+          chatBot.sendMessage(chatID, fillerText.errors.tooManyRequests);
+          return true;
         },
       });
 
@@ -74,14 +75,16 @@ chatBot.on("text", async (msg) => {
       chatBot.sendChatAction(chatID, "typing");
 
       const result = await backOff(() => chatRequestText(listOfMessages), {
-        delayFirstAttempt: true,
-        numOfAttempts: 5,
-        startingDelay: 200,
+        numOfAttempts: 3,
+        startingDelay: 10000,
         retry: function (e, attemptNumber) {
           if (attemptNumber === this.numOfAttempts) {
             chatBot.sendMessage(chatID, fillerText.errors.retryRequestFailed);
             return false;
           }
+          chatBot.sendChatAction(chatID, "typing");
+          chatBot.sendMessage(chatID, fillerText.errors.tooManyRequests);
+          return true;
         },
       });
 
@@ -95,7 +98,6 @@ chatBot.on("text", async (msg) => {
   } catch (error) {
     if (error?.response?.status === 429) {
       console.log(error.response.data);
-      chatBot.sendMessage(msg.chat.id, fillerText.errors.tooManyRequests);
       return;
     }
     if (error?.response?.data.error.type === "insufficient_quota") {
