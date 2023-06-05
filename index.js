@@ -59,6 +59,11 @@ chatBot.on("text", async (msg) => {
             chatBot.sendMessage(chatID, fillerText.errors.retryRequestFailed);
             return false;
           }
+          if (e?.response?.data.error.type === "insufficient_quota") {
+            chatBot.sendMessage(msg.chat.id, fillerText.errors.billingLimitReached);
+            return false;
+          }
+
           chatBot.sendChatAction(chatID, "typing");
           chatBot.sendMessage(chatID, fillerText.errors.tooManyRequests);
           return true;
@@ -82,6 +87,11 @@ chatBot.on("text", async (msg) => {
             chatBot.sendMessage(chatID, fillerText.errors.retryRequestFailed);
             return false;
           }
+          if (e?.response?.data.error.type === "insufficient_quota") {
+            chatBot.sendMessage(msg.chat.id, fillerText.errors.billingLimitReached);
+            return false;
+          }
+
           chatBot.sendChatAction(chatID, "typing");
           chatBot.sendMessage(chatID, fillerText.errors.tooManyRequests);
           return true;

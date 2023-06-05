@@ -14,7 +14,7 @@ const fillerText = {
 
     tooManyRequests: `${String.fromCodePoint(
       0x231b
-    )} Too many requests are currently being sent to the bot: trying to resend your request...`,
+    )} There are currently too many requests being sent to the bot so the bot cannot process them all: Trying to resend your request...`,
 
     retryRequestFailed: `${String.fromCodePoint(
       0x274c
@@ -24,7 +24,7 @@ const fillerText = {
 
     billingLimitReached: `${String.fromCodePoint(
       0x231b
-    )} Billing limit for AI bot has been reached. Please wait for recovery...}`,
+    )} The billing limit for the AI bot has been reached. Please wait for the bot to recover...`,
 
     onlyTextAllowed: `Sorry, but I can understand only text messages ${String.fromCodePoint(
       0x1f625
