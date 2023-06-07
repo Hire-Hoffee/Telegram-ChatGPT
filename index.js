@@ -59,7 +59,7 @@ chatBot.on("text", async (msg) => {
             chatBot.sendMessage(chatID, fillerText.errors.retryRequestFailed);
             return false;
           }
-          if (e?.response?.data.error.type === "insufficient_quota") {
+          if (e?.response?.data?.error?.type === "insufficient_quota") {
             chatBot.sendMessage(msg.chat.id, fillerText.errors.billingLimitReached);
             return false;
           }
@@ -87,7 +87,7 @@ chatBot.on("text", async (msg) => {
             chatBot.sendMessage(chatID, fillerText.errors.retryRequestFailed);
             return false;
           }
-          if (e?.response?.data.error.type === "insufficient_quota") {
+          if (e?.response?.data?.error?.type === "insufficient_quota") {
             chatBot.sendMessage(msg.chat.id, fillerText.errors.billingLimitReached);
             return false;
           }
@@ -110,7 +110,7 @@ chatBot.on("text", async (msg) => {
       console.log(error.response.data);
       return;
     }
-    if (error?.response?.data.error.type === "insufficient_quota") {
+    if (error?.response?.data?.error?.type === "insufficient_quota") {
       console.log(error.response.data);
       chatBot.sendMessage(msg.chat.id, fillerText.errors.billingLimitReached);
       return;
