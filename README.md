@@ -8,7 +8,7 @@
 - `npm install`
 - add `.env` file with `OPENAI_TOKEN`, `BOT_TOKEN` and `GOOGLE_SHEET` strings
 - you will also need google bot and credentials, you can create them on Google Cloud Platform
-- `npm run pm_start` or `npm start` for staring the project
+- `npm run pm_start` for staring the project
 
 P.S
 
