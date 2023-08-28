@@ -2,6 +2,10 @@
 
 ### [Link to bot](https://t.me/chatting_gpt3_bot)
 
+<br/>
+
+![Dark theme](https://i.imgur.com/sqAjUqA.png "Dark theme")
+
 #### Usage
 
 - `git clone`
@@ -10,7 +14,7 @@
 - you will also need google bot and credentials, you can create them on Google Cloud Platform
 - `npm run pm_start` for staring the project
 
-P.S
+P.S.
 
 - [OpenAI token](https://platform.openai.com/account/api-keys)
 - [Telegram token](https://core.telegram.org/bots/tutorial)
