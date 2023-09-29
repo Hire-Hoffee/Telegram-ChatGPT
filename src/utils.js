@@ -5,7 +5,7 @@ dotenv.config();
 
 async function toGoogleSheet(sheetTitle, msg) {
   try {
-    const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET);
+    const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_DEV);
     const credentials = await fs.readFile("./googleCredentials.json");
 
     await doc.useServiceAccountAuth(JSON.parse(credentials));
@@ -21,7 +21,8 @@ async function toGoogleSheet(sheetTitle, msg) {
 
       if (row._rawData[0] === msg.from.username) {
         row._rawData[1] = Number(row._rawData[1]) + 1;
-        row._rawData[2] = msg.text.length >= 75 ? `${msg.text.slice(0, 75)}...` : msg.text;
+        row._rawData[2] =
+          msg.text.length >= 75 ? `${msg.text.slice(0, 75)}...` : msg.text;
         row._rawData[3] = new Date(msg.date * 1000).toLocaleString("ru-RU");
         row.save();
         return;
