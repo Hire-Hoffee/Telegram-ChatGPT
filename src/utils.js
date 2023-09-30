@@ -3,6 +3,9 @@ import { GoogleSpreadsheet } from "google-spreadsheet";
 import * as dotenv from "dotenv";
 dotenv.config();
 
+const sheetToken =
+  process.env.APP_STATUS === "ON_DEV" ? process.env.GOOGLE_SHEET_DEV : process.env.GOOGLE_SHEET;
+
 async function toGoogleSheet(sheetTitle, msg) {
   try {
     const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_DEV);
@@ -21,8 +24,7 @@ async function toGoogleSheet(sheetTitle, msg) {
 
       if (row._rawData[0] === msg.from.username) {
         row._rawData[1] = Number(row._rawData[1]) + 1;
-        row._rawData[2] =
-          msg.text.length >= 75 ? `${msg.text.slice(0, 75)}...` : msg.text;
+        row._rawData[2] = msg.text.length >= 75 ? `${msg.text.slice(0, 75)}...` : msg.text;
         row._rawData[3] = new Date(msg.date * 1000).toLocaleString("ru-RU");
         row.save();
         return;
