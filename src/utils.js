@@ -8,7 +8,7 @@ const sheetToken =
 
 async function toGoogleSheet(sheetTitle, msg) {
   try {
-    const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_DEV);
+    const doc = new GoogleSpreadsheet(sheetToken);
     const credentials = await fs.readFile("./googleCredentials.json");
 
     await doc.useServiceAccountAuth(JSON.parse(credentials));
