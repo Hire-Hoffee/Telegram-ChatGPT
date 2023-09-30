@@ -7,6 +7,11 @@ import fillerText from "./textMessages.js";
 import { toGoogleSheet } from "./utils.js";
 import { backOff } from "exponential-backoff";
 
+const providers = {
+  openAI: { text: chatRequestTextOpenAI, image: chatRequestImageOpenAI },
+  acytoo: { text: chatRequestTextAcytoo },
+};
+
 const chatBot = botConnection();
 
 chatBot.setMyCommands([
@@ -52,7 +57,7 @@ chatBot.on("text", async (msg) => {
         return;
       }
 
-      const result = await backOff(() => chatRequestImageOpenAI(msg.text.split("!image ")[1]), {
+      const result = await backOff(() => providers.openAI.image(msg.text.split("!image ")[1]), {
         numOfAttempts: 3,
         startingDelay: 15000,
         retry: function (e, attemptNumber) {
@@ -80,7 +85,7 @@ chatBot.on("text", async (msg) => {
     if (listOfMessages.length > 0) {
       chatBot.sendChatAction(chatID, "typing");
 
-      const result = await backOff(() => chatRequestTextAcytoo(listOfMessages), {
+      const result = await backOff(() => providers.acytoo.text(listOfMessages), {
         numOfAttempts: 3,
         startingDelay: 10000,
         retry: function (e, attemptNumber) {
