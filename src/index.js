@@ -1,6 +1,7 @@
 import { botConnection } from "./botConfig.js";
 import { chatRequestTextOpenAI, chatRequestImageOpenAI } from "./api/openaiAPIConfig.js";
 import { chatRequestTextAcytoo } from "./api/acytooAPIConfig.js";
+import { chatRequestTextAivvm } from "./api/aivvmAPIConfig.js";
 import { messagesHandler } from "./handlers.js";
 import { database } from "./messagesDB.js";
 import fillerText from "./textMessages.js";
@@ -10,6 +11,7 @@ import { backOff } from "exponential-backoff";
 const providers = {
   openAI: { text: chatRequestTextOpenAI, image: chatRequestImageOpenAI },
   acytoo: { text: chatRequestTextAcytoo },
+  aivvm: { text: chatRequestTextAivvm },
 };
 
 const chatBot = botConnection();
