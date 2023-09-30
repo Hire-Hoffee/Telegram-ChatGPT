@@ -10,7 +10,7 @@ const instance = axios.create({
   },
 });
 
-async function chatRequestText(content) {
+async function chatRequestTextOpenAI(content) {
   try {
     const result = await instance.post("/v1/chat/completions", {
       model: "gpt-3.5-turbo",
@@ -23,7 +23,7 @@ async function chatRequestText(content) {
   }
 }
 
-async function chatRequestImage(content) {
+async function chatRequestImageOpenAI(content) {
   try {
     const result = await instance.post("/v1/images/generations", {
       prompt: content,
@@ -37,4 +37,4 @@ async function chatRequestImage(content) {
   }
 }
 
-export { chatRequestText, chatRequestImage };
+export { chatRequestTextOpenAI, chatRequestImageOpenAI };

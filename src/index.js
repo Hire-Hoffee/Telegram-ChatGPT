@@ -1,5 +1,6 @@
 import { botConnection } from "./botConfig.js";
-import { chatRequestText, chatRequestImage } from "./axiosConfig.js";
+import { chatRequestTextOpenAI, chatRequestImageOpenAI } from "./api/openaiAPIConfig.js";
+import { chatRequestTextAcytoo } from "./api/acytooAPIConfig.js";
 import { messagesHandler } from "./handlers.js";
 import { database } from "./messagesDB.js";
 import fillerText from "./textMessages.js";
@@ -51,7 +52,7 @@ chatBot.on("text", async (msg) => {
         return;
       }
 
-      const result = await backOff(() => chatRequestImage(msg.text.split("!image ")[1]), {
+      const result = await backOff(() => chatRequestImageOpenAI(msg.text.split("!image ")[1]), {
         numOfAttempts: 3,
         startingDelay: 15000,
         retry: function (e, attemptNumber) {
@@ -79,7 +80,7 @@ chatBot.on("text", async (msg) => {
     if (listOfMessages.length > 0) {
       chatBot.sendChatAction(chatID, "typing");
 
-      const result = await backOff(() => chatRequestText(listOfMessages), {
+      const result = await backOff(() => chatRequestTextAcytoo(listOfMessages), {
         numOfAttempts: 3,
         startingDelay: 10000,
         retry: function (e, attemptNumber) {
