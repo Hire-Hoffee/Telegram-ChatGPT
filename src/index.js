@@ -2,6 +2,7 @@ import { botConnection } from "./botConfig.js";
 import { chatRequestTextOpenAI, chatRequestImageOpenAI } from "./api/openaiAPIConfig.js";
 import { chatRequestTextAcytoo } from "./api/acytooAPIConfig.js";
 import { chatRequestTextAivvm } from "./api/aivvmAPIConfig.js";
+import { chatRequestTextG4F } from "./api/g4fAPIConfig.js";
 import { messagesHandler } from "./handlers.js";
 import { database } from "./messagesDB.js";
 import fillerText from "./textMessages.js";
@@ -12,6 +13,7 @@ const providers = {
   openAI: { text: chatRequestTextOpenAI, image: chatRequestImageOpenAI },
   acytoo: { text: chatRequestTextAcytoo },
   aivvm: { text: chatRequestTextAivvm },
+  g4f: { text: chatRequestTextG4F },
 };
 
 const chatBot = botConnection();
@@ -87,7 +89,7 @@ chatBot.on("text", async (msg) => {
     if (listOfMessages.length > 0) {
       chatBot.sendChatAction(chatID, "typing");
 
-      const result = await backOff(() => providers.acytoo.text(listOfMessages), {
+      const result = await backOff(() => providers.g4f.text(listOfMessages), {
         numOfAttempts: 3,
         startingDelay: 10000,
         retry: function (e, attemptNumber) {
