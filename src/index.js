@@ -1,7 +1,7 @@
 import { botConnection } from "./botConfig.js";
 import { chatRequestTextOpenAI, chatRequestImageOpenAI } from "./api/openaiAPIConfig.js";
 import { chatRequestTextG4F } from "./api/g4fAPIConfig.js";
-import { chatRequestImageFusionBrain } from "./api/fusionbrainAPIConfig.js";
+import { chatRequestImageFusionBrain } from "./api/fusionBrainAPIConfig.js";
 import { messagesHandler } from "./handlers.js";
 import { database } from "./messagesDB.js";
 import fillerText from "./textMessages.js";
