@@ -1,8 +1,7 @@
 import { botConnection } from "./botConfig.js";
 import { chatRequestTextOpenAI, chatRequestImageOpenAI } from "./api/openaiAPIConfig.js";
-import { chatRequestTextAcytoo } from "./api/acytooAPIConfig.js";
-import { chatRequestTextAivvm } from "./api/aivvmAPIConfig.js";
 import { chatRequestTextG4F } from "./api/g4fAPIConfig.js";
+import { chatRequestImageFusionBrain } from "./api/fusionbrainAPIConfig.js";
 import { messagesHandler } from "./handlers.js";
 import { database } from "./messagesDB.js";
 import fillerText from "./textMessages.js";
@@ -11,9 +10,8 @@ import { backOff } from "exponential-backoff";
 
 const providers = {
   openAI: { text: chatRequestTextOpenAI, image: chatRequestImageOpenAI },
-  acytoo: { text: chatRequestTextAcytoo },
-  aivvm: { text: chatRequestTextAivvm },
   g4f: { text: chatRequestTextG4F },
+  fusionBrain: { image: chatRequestImageFusionBrain },
 };
 
 const chatBot = botConnection();
@@ -61,24 +59,27 @@ chatBot.on("text", async (msg) => {
         return;
       }
 
-      const result = await backOff(() => providers.openAI.image(msg.text.split("!image ")[1]), {
-        numOfAttempts: 3,
-        startingDelay: 15000,
-        retry: function (e, attemptNumber) {
-          if (attemptNumber === this.numOfAttempts) {
-            chatBot.sendMessage(chatID, fillerText.errors.retryRequestFailed);
-            return false;
-          }
-          if (e?.response?.data?.error?.type === "insufficient_quota") {
-            chatBot.sendMessage(msg.chat.id, fillerText.errors.billingLimitReached);
-            return false;
-          }
+      const result = await backOff(
+        () => providers.fusionBrain.image(msg.text.split("!image ")[1]),
+        {
+          numOfAttempts: 3,
+          startingDelay: 15000,
+          retry: function (e, attemptNumber) {
+            if (attemptNumber === this.numOfAttempts) {
+              chatBot.sendMessage(chatID, fillerText.errors.retryRequestFailed);
+              return false;
+            }
+            if (e?.response?.data?.error?.type === "insufficient_quota") {
+              chatBot.sendMessage(msg.chat.id, fillerText.errors.billingLimitReached);
+              return false;
+            }
 
-          chatBot.sendChatAction(chatID, "typing");
-          chatBot.sendMessage(chatID, fillerText.errors.tooManyRequests);
-          return true;
-        },
-      });
+            chatBot.sendChatAction(chatID, "typing");
+            chatBot.sendMessage(chatID, fillerText.errors.tooManyRequests);
+            return true;
+          },
+        }
+      );
 
       chatBot.sendPhoto(chatID, result);
       return;
