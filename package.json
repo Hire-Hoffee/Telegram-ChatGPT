@@ -34,6 +34,7 @@
     "dotenv": "^16.0.3",
     "exponential-backoff": "^3.1.1",
     "google-spreadsheet": "^3.3.0",
+    "groq-sdk": "^0.3.3",
     "node-telegram-bot-api": "^0.61.0",
     "pm2": "^5.2.2"
   }

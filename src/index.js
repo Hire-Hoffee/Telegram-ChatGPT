@@ -2,6 +2,7 @@ import { botConnection } from "./botConfig.js";
 import { chatRequestTextOpenAI, chatRequestImageOpenAI } from "./api/openaiAPIConfig.js";
 import { chatRequestTextG4F } from "./api/g4fAPIConfig.js";
 import { chatRequestImageFusionBrain } from "./api/fusionBrainAPIConfig.js";
+import { chatRequestTextGroq } from "./api/groqCloudAPIConfig.js";
 import { messagesHandler } from "./handlers.js";
 import { database } from "./messagesDB.js";
 import fillerText from "./textMessages.js";
@@ -9,8 +10,9 @@ import { toGoogleSheet } from "./utils.js";
 import { backOff } from "exponential-backoff";
 
 const providers = {
-  openAI: { text: chatRequestTextOpenAI, image: chatRequestImageOpenAI },
   g4f: { text: chatRequestTextG4F },
+  groq: { text: chatRequestTextGroq },
+  openAI: { text: chatRequestTextOpenAI, image: chatRequestImageOpenAI },
   fusionBrain: { image: chatRequestImageFusionBrain },
 };
 
@@ -47,7 +49,7 @@ chatBot.on("text", async (msg) => {
     }
     if (msg.text === "/resetcontext") {
       database.filterDB(msg.from.id);
-      chatBot.sendMessage(chatID, "Context has been reset " + String.fromCodePoint(0x2705));
+      chatBot.sendMessage(chatID, fillerText.resetContext);
       return;
     }
 
@@ -55,25 +57,20 @@ chatBot.on("text", async (msg) => {
       chatBot.sendChatAction(chatID, "typing");
 
       if (!msg.text.split("!image ")[1]) {
-        chatBot.sendMessage(chatID, 'Please write request as "!image [your image description]"');
+        chatBot.sendMessage(chatID, fillerText.errors.noImageDes);
         return;
       }
 
       const result = await backOff(
         () => providers.fusionBrain.image(msg.text.split("!image ")[1]),
         {
-          numOfAttempts: 3,
+          numOfAttempts: 2,
           startingDelay: 15000,
           retry: function (e, attemptNumber) {
             if (attemptNumber === this.numOfAttempts) {
               chatBot.sendMessage(chatID, fillerText.errors.retryRequestFailed);
               return false;
             }
-            if (e?.response?.data?.error?.type === "insufficient_quota") {
-              chatBot.sendMessage(msg.chat.id, fillerText.errors.billingLimitReached);
-              return false;
-            }
-
             chatBot.sendChatAction(chatID, "typing");
             chatBot.sendMessage(chatID, fillerText.errors.tooManyRequests);
             return true;
@@ -90,51 +87,40 @@ chatBot.on("text", async (msg) => {
     if (listOfMessages.length > 0) {
       chatBot.sendChatAction(chatID, "typing");
 
-      const result = await backOff(() => providers.g4f.text(listOfMessages), {
-        numOfAttempts: 3,
-        startingDelay: 10000,
-        retry: function (e, attemptNumber) {
-          if (attemptNumber === this.numOfAttempts) {
-            chatBot.sendMessage(chatID, fillerText.errors.retryRequestFailed);
-            return false;
-          }
-          if (e?.response?.data?.error?.type === "insufficient_quota") {
-            chatBot.sendMessage(msg.chat.id, fillerText.errors.billingLimitReached);
-            return false;
-          }
+      for (const item in providers) {
+        try {
+          const textProvider = providers[item].text;
 
-          chatBot.sendChatAction(chatID, "typing");
-          chatBot.sendMessage(chatID, fillerText.errors.tooManyRequests);
-          return true;
-        },
-      });
+          if (textProvider) {
+            const result = await backOff(() => textProvider(listOfMessages), {
+              numOfAttempts: 2,
+              startingDelay: 10000,
+              retry: function (e, attemptNumber) {
+                if (attemptNumber === this.numOfAttempts) {
+                  return false;
+                }
+                chatBot.sendChatAction(chatID, "typing");
+                return true;
+              },
+            });
 
-      chatBot.sendMessage(chatID, result);
-      messagesHandler(chatBot, chatID, database, msg, result);
+            chatBot.sendMessage(chatID, result);
+            messagesHandler(chatBot, chatID, database, msg, result);
+            return;
+          }
+        } catch (error) {
+          console.log(error);
+          continue;
+        }
+      }
+
+      chatBot.sendMessage(chatID, fillerText.errors.retryRequestFailed);
       return;
     } else {
       chatBot.sendMessage(chatID, "Rewrite your request please " + String.fromCodePoint(0x270d));
       return;
     }
   } catch (error) {
-    if (error?.response?.status === 429) {
-      console.log(error.response.data);
-      return;
-    }
-    if (error?.response?.data?.error?.type === "insufficient_quota") {
-      console.log(error.response.data);
-      chatBot.sendMessage(msg.chat.id, fillerText.errors.billingLimitReached);
-      return;
-    }
-    if (error?.response?.status === 400 && error?.response?.data?.error?.message) {
-      console.log(error.response.data);
-      chatBot.sendMessage(
-        msg.chat.id,
-        `${String.fromCodePoint(0x274c)} ${error.response.data.error.message}`
-      );
-      return;
-    }
-
     console.log(error);
     chatBot.sendMessage(msg.chat.id, fillerText.errors.unexpected);
     return;
