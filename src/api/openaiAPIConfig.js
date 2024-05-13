@@ -18,7 +18,6 @@ async function chatRequestTextOpenAI(content) {
     });
     return result.data.choices[0].message.content.trim();
   } catch (error) {
-    console.log(error.message);
     throw error;
   }
 }
@@ -32,7 +31,6 @@ async function chatRequestImageOpenAI(content) {
     });
     return result.data.data[0].url;
   } catch (error) {
-    console.log(error.message);
     throw error;
   }
 }

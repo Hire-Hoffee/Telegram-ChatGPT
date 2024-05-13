@@ -12,10 +12,8 @@ async function chatRequestTextG4F(content) {
     const result = await instance.post("/data", {
       messages: content,
     });
-
     return result.data;
   } catch (error) {
-    console.log(error.message);
     throw error;
   }
 }

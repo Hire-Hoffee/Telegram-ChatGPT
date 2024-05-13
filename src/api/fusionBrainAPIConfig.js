@@ -61,7 +61,7 @@ async function chatRequestImageFusionBrain(content) {
   try {
     const api = new Text2ImageAPI(
       "https://api-key.fusionbrain.ai/",
-      process.env.FUSION_BRAIN_KEY,
+      process.env.FUSION_BRAIN_TOKEN,
       process.env.FUSION_BRAIN_SECRET
     );
 
@@ -72,7 +72,6 @@ async function chatRequestImageFusionBrain(content) {
 
     return buffer;
   } catch (error) {
-    console.log(error.message);
     throw error;
   }
 }
