@@ -26,7 +26,7 @@ chatBot.on("message", (msg) => {
     chatBot.sendMessage(msg.chat.id, fillerText.errors.onlyTextAllowed);
     return;
   }
-  if (msg.text.length >= 4090) {
+  if (msg.text.length >= 3000) {
     chatBot.sendMessage(msg.chat.id, fillerText.errors.tooLongMsg);
     return;
   }
