@@ -58,22 +58,18 @@ class Text2ImageAPI {
 }
 
 async function chatRequestImageFusionBrain(content) {
-  try {
-    const api = new Text2ImageAPI(
-      "https://api-key.fusionbrain.ai/",
-      process.env.FUSION_BRAIN_TOKEN,
-      process.env.FUSION_BRAIN_SECRET
-    );
+  const api = new Text2ImageAPI(
+    "https://api-key.fusionbrain.ai/",
+    process.env.FUSION_BRAIN_TOKEN,
+    process.env.FUSION_BRAIN_SECRET
+  );
 
-    const modelId = await api.getModel();
-    const uuid = await api.generate(content, modelId);
-    const image = (await api.checkGeneration(uuid))[0];
-    const buffer = Buffer.from(image, "base64");
+  const modelId = await api.getModel();
+  const uuid = await api.generate(content, modelId);
+  const image = (await api.checkGeneration(uuid))[0];
+  const buffer = Buffer.from(image, "base64");
 
-    return buffer;
-  } catch (error) {
-    throw error;
-  }
+  return buffer;
 }
 
 export { chatRequestImageFusionBrain };

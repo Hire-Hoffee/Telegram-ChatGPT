@@ -8,14 +8,10 @@ const instance = axios.create({
 });
 
 async function chatRequestTextG4F(content) {
-  try {
-    const result = await instance.post("/data", {
-      messages: content,
-    });
-    return result.data;
-  } catch (error) {
-    throw error;
-  }
+  const result = await instance.post("/data", {
+    messages: content,
+  });
+  return result.data;
 }
 
 export { chatRequestTextG4F };

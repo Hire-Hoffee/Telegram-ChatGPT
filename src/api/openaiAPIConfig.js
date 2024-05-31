@@ -11,28 +11,20 @@ const instance = axios.create({
 });
 
 async function chatRequestTextOpenAI(content) {
-  try {
-    const result = await instance.post("/v1/chat/completions", {
-      model: "gpt-3.5-turbo",
-      messages: content,
-    });
-    return result.data.choices[0].message.content.trim();
-  } catch (error) {
-    throw error;
-  }
+  const result = await instance.post("/v1/chat/completions", {
+    model: "gpt-3.5-turbo",
+    messages: content,
+  });
+  return result.data.choices[0].message.content.trim();
 }
 
 async function chatRequestImageOpenAI(content) {
-  try {
-    const result = await instance.post("/v1/images/generations", {
-      prompt: content,
-      n: 1,
-      size: "512x512",
-    });
-    return result.data.data[0].url;
-  } catch (error) {
-    throw error;
-  }
+  const result = await instance.post("/v1/images/generations", {
+    prompt: content,
+    n: 1,
+    size: "512x512",
+  });
+  return result.data.data[0].url;
 }
 
 export { chatRequestTextOpenAI, chatRequestImageOpenAI };
