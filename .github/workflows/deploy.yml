@@ -21,8 +21,7 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
           script: |
-            cd ~/projects/utils/gpt4free-proxy
+            cd ~/projects/Telegram-ChatGPT
             git pull
-            source venv/bin/activate
-            pip install -r requirements.txt
-            pm2 restart 4
+            npm i
+            pm2 restart 5
