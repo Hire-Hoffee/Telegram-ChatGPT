@@ -10,9 +10,9 @@ import { toGoogleSheet } from "./utils.js";
 import { backOff } from "exponential-backoff";
 
 const providers = {
-  g4f: { text: chatRequestTextG4F },
   groq: { text: chatRequestTextGroq },
   openAI: { text: chatRequestTextOpenAI, image: chatRequestImageOpenAI },
+  g4f: { text: chatRequestTextG4F },
   fusionBrain: { image: chatRequestImageFusionBrain },
 };
 
