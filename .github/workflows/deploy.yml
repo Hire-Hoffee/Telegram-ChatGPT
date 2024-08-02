@@ -24,4 +24,4 @@ jobs:
             cd ~/projects/Telegram-ChatGPT
             git pull
             npm i
-            pm2 restart 5
+            pm2 restart 1
