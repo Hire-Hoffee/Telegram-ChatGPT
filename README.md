@@ -41,13 +41,7 @@ This project is a Telegram bot that provides users with the ability to communica
 
 1. Clone the project repository.
 2. Install the dependencies: `npm install`.
-3. Create an `.env` file and add the following environment variables:
-   - `OPENAI_TOKEN`: Your API key for OpenAI.
-   - `BOT_TOKEN`: Your Telegram bot token.
-   - `GOOGLE_SHEET`: The ID of your Google Table.
-   - `FUSION_BRAIN_TOKEN`: Your API key for FusionBrain.
-   - `FUSION_BRAIN_SECRET`: Your secret key for FusionBrain.
-   - `GROQ_TOKEN`: Your API key for Groq Cloud.
+3. Create an `.env` file and add the following environment variables described in `.env.example` file
 4. Generate the `googleCredentials.json` file on Google Cloud Platform.
 5. Run the project: `npm run pm_start`.
 
