@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  bot:
+    build:
+      context: ./
+    deploy:
+      resources:
+        limits:
+          memory: 120M
+    restart: on-failure
