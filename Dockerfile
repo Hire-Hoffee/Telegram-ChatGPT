@@ -8,4 +8,4 @@ RUN npm ci --production
 
 COPY . .
 
-CMD node ./src/index.js
+CMD ["node", "./src/index.js"]
