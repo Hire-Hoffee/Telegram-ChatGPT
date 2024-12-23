@@ -2,6 +2,8 @@ version: "3.8"
 
 services:
   bot:
+    image: telegram-gpt
+    container_name: telegram-gpt-container
     build:
       context: ./
     deploy:
