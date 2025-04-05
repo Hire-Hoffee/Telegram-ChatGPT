@@ -10,15 +10,14 @@ class Text2ImageAPI {
     };
   }
 
-  async getModel() {
-    const response = await axios.get(this.URL + "key/api/v1/models", {
+  async getPipeline() {
+    const response = await axios.get(`${this.URL}key/api/v1/pipelines`, {
       headers: this.AUTH_HEADERS,
     });
-    const data = response.data;
-    return data[0].id;
+    return response.data[0].id;
   }
 
-  async generate(prompt, model, images = 1, width = 1024, height = 1024) {
+  async generate(prompt, pipeline, images = 1, width = 1024, height = 1024) {
     const params = {
       type: "GENERATE",
       numImages: images,
@@ -29,45 +28,47 @@ class Text2ImageAPI {
       },
     };
 
-    const formData = new FormData();
-    formData.append("model_id", model);
-    formData.append("params", JSON.stringify(params), { contentType: "application/json" });
+    const form = new FormData();
+    form.append("pipeline_id", pipeline);
+    form.append("params", JSON.stringify(params), { contentType: "application/json" });
 
-    const response = await axios.post(this.URL + "key/api/v1/text2image/run", formData, {
-      headers: { ...this.AUTH_HEADERS, ...formData.getHeaders() },
+    const response = await axios.post(`${this.URL}key/api/v1/pipeline/run`, form, {
+      headers: {
+        ...this.AUTH_HEADERS,
+        ...form.getHeaders(),
+      },
     });
 
-    const data = response.data;
-    return data.uuid;
+    return response.data.uuid;
   }
 
   async checkGeneration(requestId, attempts = 10, delay = 10) {
-    while (attempts > 0) {
-      const response = await axios.get(this.URL + "key/api/v1/text2image/status/" + requestId, {
+    while (attempts-- > 0) {
+      const response = await axios.get(`${this.URL}key/api/v1/pipeline/status/${requestId}`, {
         headers: this.AUTH_HEADERS,
       });
-      const data = response.data;
-      if (data.status === "DONE") {
-        return data.images;
+
+      if (response.data.status === "DONE") {
+        return response.data.result.files;
       }
 
-      attempts -= 1;
       await new Promise((resolve) => setTimeout(resolve, delay * 1000));
     }
+    throw new Error("Exhausted all attempts");
   }
 }
 
 async function chatRequestImageFusionBrain(content) {
   const api = new Text2ImageAPI(
     "https://api-key.fusionbrain.ai/",
-    process.env.FUSION_BRAIN_TOKEN,
-    process.env.FUSION_BRAIN_SECRET
+    "5721DC9F44A7EBC5A64006D7E3C576F8",
+    "543BC4A9EE330EF68AB1E7ECB7853EF6"
   );
 
-  const modelId = await api.getModel();
-  const uuid = await api.generate(content, modelId);
-  const image = (await api.checkGeneration(uuid))[0];
-  const buffer = Buffer.from(image, "base64");
+  const pipelineId = await api.getPipeline();
+  const uuid = await api.generate(content, pipelineId);
+  const files = (await api.checkGeneration(uuid))[0];
+  const buffer = Buffer.from(files, "base64");
 
   return buffer;
 }
