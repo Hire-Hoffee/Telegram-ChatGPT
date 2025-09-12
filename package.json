@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
+    "start": "node ./src/index.js",
     "pm_start": "pm2 start index.js -o ./logs/index-out.log -e ./logs/index-error.log --log-date-format 'DD.MM.YYYY HH:mm:ss'",
     "pm_stop": "pm2 stop index.js",
     "pm_list": "pm2 list",
@@ -35,7 +35,7 @@
     "exponential-backoff": "^3.1.1",
     "form-data": "^4.0.2",
     "google-spreadsheet": "^3.3.0",
-    "groq-sdk": "^0.3.3",
+    "groq-sdk": "^0.32.0",
     "node-telegram-bot-api": "^0.66.0"
   },
   "devDependencies": {
